@@ -1,0 +1,70 @@
+{
+  "author": "artiphishle",
+  "bugs": {
+    "url": "https://github.com/artiphishle/ankh-hooks/issues"
+  },
+  "description": "Ankhorage collection of hooks",
+  "engines": {
+    "node": "^20.15.x",
+    "pnpm": "^9.5.x"
+  },
+  "homepage": "https://github.com/artiphishle/ankh-hooks#readme",
+  "keywords": [
+    "ankhorage",
+    "ankh",
+    "hook",
+    "hooks"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "name": "ankh-ui",
+  "paths": {
+    "@/*": [
+      "./lib/*"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artiphishle/ankh-hooks.git"
+  },
+  "dependencies": {
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.7.0",
+    "eslint-config-google": "^0.14.0",
+    "prettier": "^3.3.3",
+    "tsup": "^8.2.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "build": "tsup",
+    "changeset:add": "pnpm changeset",
+    "prettier:validate": "pnpm dlx prettier --config .prettierrc --write .",
+    "prettier:write": "pnpm dlx prettier --config .prettierrc --write .",
+    "lint": "eslint",
+    "lint:fix": "pnpm run eslint --fix",
+    "prepublish": "pnpm run build",
+    "test": "node --import tsx --test lib/test/index.ts"
+  },
+  "tsup": {
+    "dts": true,
+    "entry": [
+      "lib/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  },
+  "types": "dist/index.d.ts",
+  "version": "1.0.0"
+}

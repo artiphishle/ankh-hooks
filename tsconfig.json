@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "module": "commonjs",
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@/*": [
+        "./lib/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2016"
+  },
+  "include": [
+    "./lib/**/*.ts",
+    ".eslint.config.mjs",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
