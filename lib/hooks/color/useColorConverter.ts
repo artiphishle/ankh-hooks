@@ -1,69 +1,47 @@
 import { useColorParser } from "./useColorParser"
 
-/**
- * Brackets = [MISSING]
- * 
- * ✅ hsl to hex
- * - [lab to hex]
- * - [lch to hex]
- * ✅ rgb to hex
- * - [xyz to hex]
- *
- * ✅ rgbA to hexA
- * 
- * - [hex to hsl]
- * - [lab to hsl]
- * - [lch to hsl] 
- * ✅ rgb to hsl
- * ✅ xyz to hsl
- * 
- * - [hex to lab]
- * - [hsl to lab]
- * ✅ lch to lab
- * ✅ rgb to lab
- * ✅ xyz to lab
- * 
- * - [hex to lch]
- * - [hsl to lch]
- * ✅ lab to lch
- * - [rgb to lch]
- * - [xyz to lch]
- * 
- * ✅ hex to rgb
- * ✅ hsl to rgb
- * - [lab to rgb]
- * - [lch to rgb]
- * ✅ xyz to rgb
- * 
- * ✅ hex to xyz
- * ✅ hsl to xyz
- * ✅ lab to xyz
- * - [lch to xyz]
- * ✅ rgb to xyz
- */
-
 /** @output hex */
 function hslToHex(hslString: string) {
   rgbToHex(hslToRgb(hslString));
 }
-function labToHex(labString: string) { return "#000000" }
-function lchToHex(lchString: string) { return "#000000" }
-function rgbToHex(rgbString: string) {
-  const [r, g, b] = useColorParser().parseRgb(rgbString);
-  return `#${r!.toString(16)}${g?.toString(16)}${b!.toString(16)}`;
+function labToHex(labString: string) {
+  return rgbToHex(labToRgb(labString));
 }
-function xyzToHex(xyzString: string) { return "#000000" }
+function lchToHex(lchString: string) {
+  return rgbToHex(lchToRgb(lchString));
+}
+function rgbToHex(rgbString: string) {
+  const numValues = useColorParser().parseRgb(rgbString);
+  const hexValues = numValues.map((rgb: number) => rgb.toString(16));
+  const hexFixed2 = hexValues.map((hex) => hex.length === 1 ? `0${hex}` : hex).join("");
+  return `#${hexFixed2}`;
+}
+function xyzToHex(xyzString: string) {
+  return rgbToHex(xyzToRgb(xyzString));
+}
 
 /** @output hexA */
 function rgbaToHexA(rgbaString: string) {
-  const [r, g, b, a] = useColorParser().parseRgbA(rgbaString);
-  return `#${r!.toString(16)}${g!.toString(16)}${b!.toString(16)}${a!}`
+  const numValues = useColorParser().parseRgbA(rgbaString);
+  // const alpha = a! * 100 === 100 ? "" : a! * 100;
+  const hexValues = numValues.map((rgba, i) => i === 3 ? `${rgba * 100}` : rgba.toString(16));
+  const hexFixed2 = hexValues.map((hex, i) => {
+    if (i === 3) return hex === "100" ? "" : hex;
+    return hex.length === 1 ? `0${hex}` : hex;
+  }).join("");
+  return `#${hexFixed2}`
 }
 
 /** @output hsl */
-function hexToHsl(hexString: string) { return "hsl(0 0 0)" }
-function labToHsl(labString: string) { return "hsl(0 0 0)" }
-function lchToHsl(lchString: string) { return "hsl(0 0 0)" }
+function hexToHsl(hexString: string) {
+  return rgbToHsl(hexToRgb(hexString));
+}
+function labToHsl(labString: string) {
+  return xyzToHsl(labToXyz(labString));
+}
+function lchToHsl(lchString: string) {
+  xyzToHsl(lchToXyz(lchString));
+}
 function rgbToHsl(rgbString: string) {
   const { parseRgb } = useColorParser();
   const rgb = parseRgb(rgbString);
@@ -104,11 +82,17 @@ function rgbToHsl(rgbString: string) {
 
   return `hsl(${h}, ${s}, ${l})`
 }
-function xyzToHsl(xyzString: string) { return "hsl(0 0 0)" }
+function xyzToHsl(xyzString: string) {
+  return rgbToHsl(xyzToRgb(xyzString));
+}
 
 /** @output lab */
-function hexToLab(hexString: string) { return "lab(0 0 0" }
-function hslToLab(hslString: string) { return "lab(0 0 0" }
+function hexToLab(hexString: string) {
+  return rgbToLab(hexToRgb(hexString));
+}
+function hslToLab(hslString: string) {
+  return rgbToLab(hslToRgb(hslString));
+}
 function lchToLab(lchString: string) {
   const { parseLch } = useColorParser();
   const [l, c, h] = parseLch(lchString);
@@ -116,9 +100,11 @@ function lchToLab(lchString: string) {
   const a = Math.cos(h! * 0.01745329251) * c!;
   const b = Math.sin(h! * 0.01745329251) * c!;
 
-  return { l, a, b }
+  return `lab(${l}, ${a}, ${b})`;
 }
-function rgbToLab(rgbString: string) { return "lab(0 0 0)" }
+function rgbToLab(rgbString: string) {
+  return xyzToLab(rgbToXyz(rgbString));
+}
 function xyzToLab(xyzString: string) {
   const { parseXyz } = useColorParser();
   const xyz = parseXyz(xyzString);
@@ -141,12 +127,16 @@ function xyzToLab(xyzString: string) {
   const a = 500 * (x - y)
   const b = 200 * (y - z)
 
-  return { l, a, b }
+  return `lab(${l}, ${a}, ${b})`;
 }
 
 /** @output lch */
-function hexToLch(hexString: string) { return "" }
-function hslToLch(hslString: string) { return "" }
+function hexToLch(hexString: string) {
+  return xyzToHex(hexToXyz(hexString));
+}
+function hslToLch(hslString: string) {
+  return labToLch(hslToLab(hslString));
+}
 function labToLch(labString: string) {
   const { parseLab } = useColorParser();
   const [l, a, b] = parseLab(labString);
@@ -156,10 +146,14 @@ function labToLch(labString: string) {
   if (h > 0) h = (h / Math.PI) * 180;
   else h = 360 - (Math.abs(h) / Math.PI) * 180;
 
-  return { l, c, h }
+  return `lch(${l}, ${c}, ${h})`;
 }
-function rgbToLch(rgbString: string) { return "" }
-function xyzToLch(xyzString: string) { return "" }
+function rgbToLch(rgbString: string) {
+  return labToLch(rgbToLab(rgbString));
+}
+function xyzToLch(xyzString: string) {
+  return labToLch(xyzToLab(xyzString));
+}
 
 /** @output rgb */
 function hexToRgb(hexString: string) {
@@ -201,8 +195,12 @@ function hslToRgb(hslString: string) {
 
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
 }
-function labToRgb(labString: string) { return "rgb(0, 0, 0)" }
-function lchToRgb(lchString: string) { return "rgb(0, 0, 0)" }
+function labToRgb(labString: string) {
+  return lchToRgb(labToLch(labString));
+}
+function lchToRgb(lchString: string) {
+  return xyzToRgb(lchToXyz(lchString));
+}
 function xyzToRgb(xyzString: string) {
   const { parseXyz } = useColorParser();
   const xyz = parseXyz(xyzString);
@@ -233,19 +231,18 @@ function xyzToRgb(xyzString: string) {
   } else {
     b = 12.92 * b
   }
+  const rgb = [r *= 255, g *= 255, b *= 255]
 
-  r *= 255
-  g *= 255
-  b *= 255
-
-  return { r, g, b }
+  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
 }
 
 /** @output xyz */
 function hexToXyz(hexString: string) {
   return rgbToXyz(hexToRgb(hexString));
 }
-function hslToXyz(hslString: string) { return "" }
+function hslToXyz(hslString: string) {
+  return rgbToXyz(hslToRgb(hslString));
+}
 function labToXyz(labString: string) {
   const { parseLab } = useColorParser();
   const [l, a, b] = parseLab(labString);
@@ -264,13 +261,15 @@ function labToXyz(labString: string) {
   else z = (z - 0.137931034) / 7.787;
 
   // Observer = 2°, Illuminant = D65
-  x = 95.047 * x
-  y = 100.000 * y
-  z = 108.883 * z
+  x = 95.047 * x;
+  y = 100.000 * y;
+  z = 108.883 * z;
 
-  return [x, y, z]
+  return `xyz(${x}, ${y}, ${z})`;
 }
-function lchToXyz(lchString: string) { return "" }
+function lchToXyz(lchString: string) {
+  return labToXyz(lchToLab(lchString));
+}
 function rgbToXyz(rgbString: string) {
   const { parseRgb } = useColorParser();
   const rgb = parseRgb(rgbString);
@@ -306,7 +305,7 @@ function rgbToXyz(rgbString: string) {
   const y = r * 0.2126 + g * 0.7152 + b * 0.0722
   const z = r * 0.0193 + g * 0.1192 + b * 0.9505
 
-  return [x, y, z];
+  return `xyz(${x}, ${y}, ${z})`;
 }
 
 export function useColorConverter() {
