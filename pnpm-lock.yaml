@@ -21,6 +21,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
+      ankh-types:
+        specifier: ^1.0.3
+        version: 1.0.3
       eslint:
         specifier: ^9.7.0
         version: 9.7.0
@@ -31,7 +34,7 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       tsup:
-        specifier: ^8.2.2
+        specifier: ^8.2.3
         version: 8.2.3(tsx@4.16.2)(typescript@5.5.4)
       tsx:
         specifier: ^4.16.2
@@ -506,6 +509,10 @@ packages:
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
+
+  ankh-types@1.0.3:
+    resolution: {integrity: sha512-zWJ7R7pu0x8j5EiBICVUuMIdcsr7r6fMxKmy10d7jKo2P1L0zyxbe1GWOKsCyZwGHcRuALorczTZpkza6w2KJQ==}
+    engines: {node: ^20.15.x, pnpm: ^9.5.x}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -1471,6 +1478,8 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+
+  ankh-types@1.0.3: {}
 
   ansi-regex@5.0.1: {}
 

@@ -1,4 +1,4 @@
-import { EAnkhColorParserError, EAnkhColorUnit } from "@/hooks/color/types";
+import { EAnkhColorParserError, EAnkhColorUnit } from "ankh-types";
 import { useColorValidator } from "@/hooks/color/useColorValidator";
 import { useColorHelper } from "@/hooks/color/useColorHelper";
 import { useError } from "@/hooks/mdd/useError";
@@ -18,8 +18,7 @@ export function useColorParser() {
 
   function parseHex(colorValue: string) {
     if (!isValidHex(colorValue)) throw new Error(colorValue);
-    const colorVal = colorValue.toLowerCase();
-    return colorVal.startsWith('#') ? colorVal.slice(1) : colorVal;
+    return colorValue.toLowerCase();
   }
   function parseHsl(colorValue: string) {
     if (!isValidHsl(colorValue)) throw new Error(colorValue);
@@ -39,7 +38,8 @@ export function useColorParser() {
   }
   function parseRgbA(colorValue: string) {
     if (!isValidRgbA(colorValue)) throw new Error(colorValue);
-    return colorValue.slice(5, -1).split(",").map((v) => parseInt(v, 10));
+    const colorVal = colorValue.replace(/ /g, "");
+    return colorVal.slice(5, -1).split(",").map((v, i) => i === 3 ? parseFloat(v) : parseInt(v, 10));
   }
   function parseXyz(colorValue: string) {
     if (!isValidXyz(colorValue)) throw new Error(colorValue);

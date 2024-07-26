@@ -30,7 +30,6 @@ test("calculates correct contrast rounded to 4 decimals", () => {
   tests.forEach((hexValues, testIndex) => {
     const received = useColorContrastFromHex(hexValues[0], hexValues[1], 4);
     const expected = expecteds[testIndex];
-    console.log(received, expected);
     assert(received === expected);
   });
 });

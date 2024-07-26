@@ -62,13 +62,14 @@ export function useColorValidator() {
     );
   }
   function isValidRgbA(colorValue: string) {
-    const numValues = colorValue.slice(5, -1).split(",");
+    const colorVal = colorValue.replace(/ /g, "");
+    const numValues = colorVal.slice(5, -1).split(",");
     if (numValues.length !== 4) return false;
 
     const [r, g, b, a] = numValues;
     if (!isValidRgb(`rgb(${r}, ${g}, ${b})`)) return false;
 
-    const alpha = parseInt(a!, 10);
+    const alpha = parseFloat(a!);
     if (alpha < 0 || alpha > 100) return false;
 
     return true

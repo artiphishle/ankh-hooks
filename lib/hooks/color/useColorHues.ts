@@ -1,4 +1,4 @@
-import { EAnkhColorUnit, IAnkhColor } from "@/hooks/color/types";
+import { EAnkhColorUnit, IAnkhColor } from "ankh-types";
 import { useColorConverter } from "./useColorConverter";
 import { useColorParser } from "./useColorParser";
 

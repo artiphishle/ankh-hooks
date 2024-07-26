@@ -31,7 +31,7 @@
  * - Should have multiple shades of gray and low saturated colors
  * - Could have a systematic pattern which can be added to as the needs of the design system grows.
  */
-import { IAnkhColorTone } from "@/hooks/color/types";
+import { IAnkhColorTone } from "ankh-types";
 
 /** @tone Jewel */
 const JewelTone: IAnkhColorTone = {
