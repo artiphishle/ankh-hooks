@@ -34,7 +34,7 @@
 import { IAnkhColorTone } from "ankh-types";
 
 /** @tone Jewel */
-const JewelTone: IAnkhColorTone = {
+export const JewelTone: IAnkhColorTone = {
   saturation: { min: 73, max: 83 },
   brightness: { min: 56, max: 76 }
 };

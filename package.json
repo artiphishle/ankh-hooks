@@ -29,14 +29,17 @@
     "url": "git+https://github.com/artiphishle/ankh-hooks.git"
   },
   "dependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.0.0",
     "@types/node": "^20.14.12",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "ankh-types": "^1.0.3",
-    "eslint": "^9.7.0",
+    "ankh-types": "^1.0.5",
+    "eslint": "^9.8.0",
     "eslint-config-google": "^0.14.0",
     "prettier": "^3.3.3",
     "tsup": "^8.2.3",
@@ -67,5 +70,5 @@
     "clean": true
   },
   "types": "dist/index.d.ts",
-  "version": "1.0.3"
+  "version": "1.0.4"
 }
