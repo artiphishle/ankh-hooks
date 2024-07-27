@@ -9,10 +9,11 @@ const generateHslColor = ({ hue, saturation, lightness }: IHslRange) => {
 
 export function useColorPalette(hslRange: IHslRange, count: number) {
   const [colors, setColors] = useState<string[]>([]);
+
   useEffect(() => {
     const newColors = Array.from({ length: count }, () => generateHslColor(hslRange));
     setColors(newColors);
-  }, [hslRange, count]);
+  }, []);
 
   return colors;
 }
