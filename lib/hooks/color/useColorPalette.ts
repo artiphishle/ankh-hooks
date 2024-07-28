@@ -85,7 +85,7 @@ function useShadesPalette({ hue }: IUseColorPalette) {
   return generatePalette({ hue, range, tone: EColorTone.Shades });
 };
 
-export function useColorPalette({ count, hue }: IUseColorPalette) {
+export function useColorPalette() {
   return {
     useEarthPalette,
     useFluorescentPalette,
