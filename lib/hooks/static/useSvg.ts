@@ -1,15 +1,23 @@
+import { useEffect, useState } from "react";
 import { useError } from "../mdd";
 
-export async function useSvg({ name }: IUseSvg) {
+export function useSvg(filePath: string) {
   const { useFatalError } = useError();
+  const [svg, setSvg] = useState<string>();
 
-  try {
-    return (await import(`/icons/${name.toLowerCase()}.svg`)).default;
-  } catch (error: any) {
-    useFatalError(`Cannot load SVG '${name}': ${error}`);
-  }
-}
+  useEffect(() => {
+    async function fetchSvg() {
+      try {
+        const response = await fetch(filePath);
+        if (!response.ok) throw response.text;
+        const svgText = await response.text();
+        setSvg(svgText);
+      } catch (error: any) {
+        useFatalError(`Cannot load SVG '${name}': ${error}`);
+      }
+    }
+    fetchSvg();
+  }, [filePath]);
 
-interface IUseSvg {
-  name: string;
+  return { svg };
 }
