@@ -38,12 +38,12 @@
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
     "@types/node": "^20.14.13",
-    "ankh-types": "^1.0.6",
+    "ankh-types": "^1.0.9",
     "eslint": "^9.8.0",
     "eslint-config-google": "^0.14.0",
     "prettier": "^3.3.3",
     "tsup": "^8.2.3",
-    "tsx": "^4.16.2",
+    "tsx": "^4.16.4",
     "typescript": "^5.5.4"
   },
   "scripts": {
@@ -70,5 +70,5 @@
     "clean": true
   },
   "types": "dist/index.d.ts",
-  "version": "1.2.0"
+  "version": "1.2.1"
 }
