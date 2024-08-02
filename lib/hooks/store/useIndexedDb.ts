@@ -1,35 +1,81 @@
 "use client";
 import { useState } from "react";
 
-export function useIndexedDb(dbName: string) {
-  const [db, setDb] = useState<any | null>(null);
-  const [store, setStore] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export function useIndexedDb<T>({ dbName, storeName }: IUseAnkhIndexedDb) {
+  const [db, setDb] = useState<IDBDatabase | null>(null);
+  const openRequest = indexedDB.open(dbName, 6);
 
-  const request = indexedDB.open(dbName, 1);
-
-  request.onupgradeneeded = async function (event: any) {
-    const db = event.target.result;
-    const store = await db.createObjectStore("ankh-cms-config", { keyPath: "id" });
-    setDb(db);
-    setStore(store);
-    // objectStore.createIndex("nameIndex", "name", { unique: false });
-  };
-  request.onsuccess = function (event: any) {
-    console.log("Connected to:", dbName);
-  };
-  request.onerror = function (event: any) {
-    setError("Fehler");
-  };
-
-  const getConfig = async (id: number) => store.get(id);
-
-  const addConfig = async (data: any) => {
-    if (!db) return console.log('Db not available...');
-    const transaction = db?.transaction("ankh-cms-config", "readwrite");
-    const configStore = transaction?.objectStore("ankh-cms-config");
-    await configStore?.add(data);
+  openRequest.onupgradeneeded = (event: Event) => {
+    const db: IDBDatabase = (event.target as IDBRequest).result;
+    if (!db.objectStoreNames.contains(storeName)) {
+      db.createObjectStore(storeName, { keyPath: 'id' });
+    }
   }
+  openRequest.onsuccess = (event: Event) => {
+    setDb((event.target as IDBOpenDBRequest).result);
+  }
+  openRequest.onerror = (event: Event) => console.error('IndexedDB error:', (event.target as IDBOpenDBRequest).error);
 
-  return { error, db, store, getConfig, addConfig };
+  const put = (data: T, id: IDBValidKey) => new Promise<IDBValidKey>((resolve, reject) => {
+    if (!db) { reject('no db'); return }
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.put(data, id);
+
+    request.onsuccess = (event: Event) => {
+      setDb((event.target as IDBOpenDBRequest).result)
+      resolve(request.result)
+    };
+    request.onerror = (event: Event) => {
+      reject((event.target as IDBOpenDBRequest).error);
+    };
+  });
+
+  const api = {
+    create: put,
+    read: (id: IDBValidKey) => new Promise<T>((resolve, reject) => {
+      if (!db) { reject('no db'); return }
+      const transaction = db.transaction(storeName, 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.get(id);
+
+      request.onsuccess = () => {
+        resolve(request.result);
+      }
+      request.onerror = (event: Event) => {
+        reject((event.target as IDBRequest).error);
+      }
+    }),
+    update: put,
+    delete: (id: IDBValidKey) => new Promise<undefined>((resolve, reject) => {
+      if (!db) { reject('no db'); return }
+      const transaction = db.transaction(storeName);
+      transaction.oncomplete = () => {
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(id);
+
+        request.onsuccess = () => {
+          resolve(request.result);
+        };
+        request.onerror = (event: Event) => {
+          reject((event.target as IDBRequest).error);
+        };
+      }
+    })
+  };
+
+  return { api };
+}
+
+interface IUseAnkhIndexedDb {
+  readonly dbName: string;
+  readonly storeName: string;
+  readonly keyPath?: IDBValidKey;
+}
+
+interface IUseIndexedDbApi {
+  create: (data: any, id: IDBValidKey) => Promise<IDBValidKey>;
+  read: (id: IDBValidKey) => Promise<any>;
+  update: (data: any, id: IDBValidKey) => any;
+  delete: (id: IDBValidKey) => Promise<undefined>;
 }
