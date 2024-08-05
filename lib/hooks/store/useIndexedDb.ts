@@ -10,7 +10,6 @@ export function useIndexedDb<T extends IData>({ dbName, storeName }: IUseAnkhInd
     const tx = db.transaction(storeName, mode);
 
     tx.onerror = (event) => console.warn(event);
-    // tx.oncomplete = () => { }
 
     return tx;
   }
