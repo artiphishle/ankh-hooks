@@ -1,4 +1,4 @@
-import { EAnkhColorTone } from "ankh-types";
+import { EAnkhColorTone, IAnkhColor, IAnkhColorHsl } from "ankh-types";
 
 enum EAnkhColorSeverity {
   Error,
@@ -91,6 +91,32 @@ function usePaletteCreator({ config }: IUsePaletteCreator) {
   })
 }
 
+function getUsedColorTone(colors: IAnkhColorHsl[]) {
+  const EARTH_RULES = rules.tone[EAnkhColorTone.Earth];
+  const FLUORESCENT_RULES = rules.tone[EAnkhColorTone.Fluorescent];
+  const JEWEL_RULES = rules.tone[EAnkhColorTone.Jewel];
+  const NEUTRAL_RULES = rules.tone[EAnkhColorTone.Neutral];
+  const PASTEL_RULES = rules.tone[EAnkhColorTone.Pastel];
+  const SHADE_RULES = rules.tone[EAnkhColorTone.Shades];
+
+  function getUsedTone({ s, l }: { s: number; l: number }) {
+    if (s >= EARTH_RULES.s.min && s <= EARTH_RULES.s.max && l >= EARTH_RULES.l.min && l <= EARTH_RULES.l.max) return EAnkhColorTone.Earth;
+    if (s >= FLUORESCENT_RULES.s.min && s <= FLUORESCENT_RULES.s.max && l >= FLUORESCENT_RULES.l.min && l <= FLUORESCENT_RULES.l.max) return EAnkhColorTone.Fluorescent;
+    if (s >= JEWEL_RULES.s.min && s <= JEWEL_RULES.s.max && l >= JEWEL_RULES.l.min && l <= JEWEL_RULES.l.max) return EAnkhColorTone.Jewel;
+    if (s >= NEUTRAL_RULES.s.min && s <= NEUTRAL_RULES.s.max && l >= NEUTRAL_RULES.l.min && l <= NEUTRAL_RULES.l.max) return EAnkhColorTone.Neutral;
+    if (s >= PASTEL_RULES.s.min && s <= PASTEL_RULES.s.max && l >= PASTEL_RULES.l.min && l <= PASTEL_RULES.l.max) return EAnkhColorTone.Pastel;
+    if (s >= SHADE_RULES.s.min && s <= SHADE_RULES.s.max && l >= SHADE_RULES.l.min && l <= SHADE_RULES.l.max) return EAnkhColorTone.Shades;
+    return "";
+  }
+
+  const tones = colors.map((color) => getUsedTone(color));
+  const firstTone = tones[0];
+  const result = tones.filter((tone) => tone === firstTone);
+
+  if (result.length === colors.length) return firstTone;
+  return "";
+}
+
 function useEarthPalette({ count, hue }: IUseColorPalette) {
   const range = rules.tone[EAnkhColorTone.Earth];
   return generatePalette({ count, hue, range, tone: EAnkhColorTone.Earth });
@@ -118,6 +144,7 @@ function useShadesPalette({ count, hue }: IUseColorPalette) {
 
 export function useColorPalette() {
   return {
+    getUsedColorTone,
     useEarthPalette,
     useFluorescentPalette,
     useJewelPalette,
