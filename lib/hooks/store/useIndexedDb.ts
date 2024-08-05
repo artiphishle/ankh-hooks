@@ -1,81 +1,81 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function useIndexedDb<T>({ dbName, storeName }: IUseAnkhIndexedDb) {
+export function useIndexedDb<T extends IData>({ dbName, storeName }: IUseAnkhIndexedDb) {
   const [db, setDb] = useState<IDBDatabase | null>(null);
-  const openRequest = indexedDB.open(dbName, 6);
 
-  openRequest.onupgradeneeded = (event: Event) => {
-    const db: IDBDatabase = (event.target as IDBRequest).result;
-    if (!db.objectStoreNames.contains(storeName)) {
-      db.createObjectStore(storeName, { keyPath: 'id' });
-    }
+  function createTransaction(mode: EIndexedDbTransactionMode = EIndexedDbTransactionMode.ReadOnly) {
+    if (!db) throw new Error("Trying to call db.transaction before db was initialized");
+
+    const tx = db.transaction(storeName, mode);
+
+    tx.onerror = (event) => console.warn(event);
+    // tx.oncomplete = () => { }
+
+    return tx;
   }
-  openRequest.onsuccess = (event: Event) => {
-    setDb((event.target as IDBOpenDBRequest).result);
-  }
-  openRequest.onerror = (event: Event) => console.error('IndexedDB error:', (event.target as IDBOpenDBRequest).error);
-
-  const put = (data: T, id: IDBValidKey) => new Promise<IDBValidKey>((resolve, reject) => {
-    if (!db) { reject('no db'); return }
-    const transaction = db.transaction(storeName, 'readwrite');
-    const store = transaction.objectStore(storeName);
-    const request = store.put(data, id);
-
-    request.onsuccess = (event: Event) => {
-      setDb((event.target as IDBOpenDBRequest).result)
-      resolve(request.result)
-    };
-    request.onerror = (event: Event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-  });
 
   const api = {
-    create: put,
-    read: (id: IDBValidKey) => new Promise<T>((resolve, reject) => {
-      if (!db) { reject('no db'); return }
-      const transaction = db.transaction(storeName, 'readonly');
-      const store = transaction.objectStore(storeName);
-      const request = store.get(id);
+    add: (data: IData) => {
+      return new Promise((resolve, reject) => {
+        const tx = createTransaction(EIndexedDbTransactionMode.ReadWrite);
+        const store = tx.objectStore(storeName);
+        const addRequest = store.add(data);
 
-      request.onsuccess = () => {
-        resolve(request.result);
-      }
-      request.onerror = (event: Event) => {
-        reject((event.target as IDBRequest).error);
-      }
-    }),
-    update: put,
-    delete: (id: IDBValidKey) => new Promise<undefined>((resolve, reject) => {
-      if (!db) { reject('no db'); return }
-      const transaction = db.transaction(storeName);
-      transaction.oncomplete = () => {
-        const store = transaction.objectStore(storeName);
-        const request = store.delete(id);
+        addRequest.onsuccess = () => resolve(addRequest.result);
+        addRequest.onerror = () => reject(addRequest.error);
+      });
+    },
+    get: (id: IDBValidKey) => {
+      return new Promise<IData>((resolve, reject) => {
+        const tx = createTransaction();
+        const store = tx.objectStore(storeName);
+        const getRequest = store.get(id);
 
-        request.onsuccess = () => {
-          resolve(request.result);
-        };
-        request.onerror = (event: Event) => {
-          reject((event.target as IDBRequest).error);
-        };
-      }
-    })
+        getRequest.onsuccess = () => resolve(getRequest.result);
+        getRequest.onerror = () => reject(getRequest.error)
+      });
+    },
+    put: (data: IData) => {
+      return new Promise<IDBValidKey>((resolve, reject) => {
+        const tx = createTransaction(EIndexedDbTransactionMode.ReadWrite);
+        const store = tx.objectStore(storeName);
+        const putRequest = store.put(data);
+
+        putRequest.onsuccess = () => resolve(putRequest.result);
+        putRequest.onerror = () => reject(putRequest.error)
+      })
+    }
   };
 
-  return { api };
+  useEffect(() => {
+    const openRequest = indexedDB.open(dbName);
+
+    openRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+      const database = (event.target as IDBOpenDBRequest).result;
+
+      if (!database.objectStoreNames.contains(storeName)) {
+        database.createObjectStore(storeName, { keyPath: 'id' });
+      }
+    }
+    openRequest.onsuccess = () => {
+      setDb(openRequest.result);
+    }
+  }, [dbName, storeName]);
+
+  return { db, api };
 }
 
+enum EIndexedDbTransactionMode {
+  ReadWrite = "readwrite",
+  ReadOnly = "readonly"
+}
 interface IUseAnkhIndexedDb {
   readonly dbName: string;
   readonly storeName: string;
   readonly keyPath?: IDBValidKey;
 }
-
-interface IUseIndexedDbApi {
-  create: (data: any, id: IDBValidKey) => Promise<IDBValidKey>;
-  read: (id: IDBValidKey) => Promise<any>;
-  update: (data: any, id: IDBValidKey) => any;
-  delete: (id: IDBValidKey) => Promise<undefined>;
+interface IData {
+  id: IDBValidKey
+  [k: string]: any;
 }

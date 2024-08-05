@@ -8,3 +8,4 @@ export * from "./useColorConverter.test";
 // export * from "./useColorPalette.test";
 export * from "./useColorParser.test";
 // export * from "./useColorValidator.test";
+export * from "./useIndexedDb.test";
