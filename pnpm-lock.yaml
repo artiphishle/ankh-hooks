@@ -34,8 +34,8 @@ importers:
         specifier: ^20.14.14
         version: 20.14.14
       ankh-types:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       eslint:
         specifier: ^9.8.0
         version: 9.8.0
@@ -576,8 +576,8 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
-  ankh-types@1.1.0:
-    resolution: {integrity: sha512-tfrp/9Iu07FgZNaATNsShZX17oXxMI/gdbpwlmVMv0gag2hlTbJFD8zDBs+SmYWkXmX/kxG/9KY0gsece1oEyg==}
+  ankh-types@1.1.1:
+    resolution: {integrity: sha512-3sTGNit/cNVbCMb7/cK7oNmXYK78wqziBhOm7XQhdWbCsSWM4/wUZWQlqQOqfc2Fo9bkIOz6j4Nea91WvnKGNg==}
     engines: {node: ^20.15.x, pnpm: ^9.5.x}
 
   ansi-regex@5.0.1:
@@ -1828,7 +1828,7 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  ankh-types@1.1.0: {}
+  ankh-types@1.1.1: {}
 
   ansi-regex@5.0.1: {}
 

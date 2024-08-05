@@ -106,15 +106,15 @@ function getUsedColorTone(colors: IAnkhColorHsl[]) {
     if (s >= NEUTRAL_RULES.s.min && s <= NEUTRAL_RULES.s.max && l >= NEUTRAL_RULES.l.min && l <= NEUTRAL_RULES.l.max) return EAnkhColorTone.Neutral;
     if (s >= PASTEL_RULES.s.min && s <= PASTEL_RULES.s.max && l >= PASTEL_RULES.l.min && l <= PASTEL_RULES.l.max) return EAnkhColorTone.Pastel;
     if (s >= SHADE_RULES.s.min && s <= SHADE_RULES.s.max && l >= SHADE_RULES.l.min && l <= SHADE_RULES.l.max) return EAnkhColorTone.Shades;
-    return "";
+    return EAnkhColorTone.Custom;
   }
 
   const tones = colors.map((color) => getUsedTone(color));
-  const firstTone = tones[0];
-  const result = tones.filter((tone) => tone === firstTone);
+  if (tones.includes(EAnkhColorTone.Custom)) return EAnkhColorTone.Custom;
 
-  if (result.length === colors.length) return firstTone;
-  return "";
+  const filtered = tones.filter((tone) => tone === tones[0]);
+  if (filtered.length === colors.length) return filtered[0];
+  return EAnkhColorTone.Custom;
 }
 
 function useEarthPalette({ count, hue }: IUseColorPalette) {
