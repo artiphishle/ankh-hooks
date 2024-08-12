@@ -17,7 +17,7 @@ export function useSvg(filePath: string) {
       }
     }
     fetchSvg();
-  }, [filePath]);
+  }, []);
 
   return { svg };
 }
