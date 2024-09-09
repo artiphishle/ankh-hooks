@@ -1,4 +1,4 @@
-import { EAnkhColorTone, IAnkhColorHsl } from "ankh-types";
+import { EAnkhColorTone, type IAnkhColorHsl } from "ankh-types";
 
 enum EAnkhColorSeverity {
   Error,
@@ -19,8 +19,13 @@ enum EAnkhColorToneCombination {
   JewelAndPastel,
   ShadesAndPastel,
 }
+interface IAnkhColorRules {
+  combination: any;
+  tone: Record<EAnkhColorTone, any>;
+  severity: Record<EAnkhColorSeverity, any>;
+}
 
-const rules = {
+const rules: IAnkhColorRules = {
   combination: {
     [EAnkhColorToneCombination.EarthAndNeutral]: {
       [EAnkhColorSemanticName.Primary]: { tone: EAnkhColorTone.Earth },
