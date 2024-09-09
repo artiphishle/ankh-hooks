@@ -21,7 +21,7 @@ enum EAnkhColorToneCombination {
 }
 interface IAnkhColorRules {
   combination: any;
-  tone: Record<EAnkhColorTone, any>;
+  tone: Record<Exclude<EAnkhColorTone, EAnkhColorTone.Custom>, any>;
   severity: Record<EAnkhColorSeverity, any>;
 }
 
