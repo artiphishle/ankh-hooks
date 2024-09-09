@@ -6,7 +6,6 @@ enum EAnkhColorSeverity {
   Success,
   Warn
 }
-
 enum EAnkhColorSemanticName {
   Primary = 'primary',
   Secondary = 'secondary',
