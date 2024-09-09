@@ -1,4 +1,4 @@
-import { EAnkhColorTone, IAnkhColor, IAnkhColorHsl } from "ankh-types";
+import { EAnkhColorTone, IAnkhColorHsl } from "ankh-types";
 
 enum EAnkhColorSeverity {
   Error,
@@ -81,6 +81,7 @@ function generatePalette({ count = 4, hue, range }: IGeneratePalette) {
   return new Array(count).fill({ hue, range }).map(() => generateHslColor({ hue, range }))
 }
 
+/*
 function usePaletteCreator({ config }: IUsePaletteCreator) {
   const { hues, tones } = config;
 
@@ -90,6 +91,7 @@ function usePaletteCreator({ config }: IUsePaletteCreator) {
     })
   })
 }
+*/
 
 function getUsedColorTone(colors: IAnkhColorHsl[]) {
   const EARTH_RULES = rules.tone[EAnkhColorTone.Earth];
@@ -113,7 +115,7 @@ function getUsedColorTone(colors: IAnkhColorHsl[]) {
   if (tones.includes(EAnkhColorTone.Custom)) return EAnkhColorTone.Custom;
 
   const filtered = tones.filter((tone) => tone === tones[0]);
-  if (filtered.length === colors.length) return filtered[0];
+  if (filtered.length === colors.length) return filtered[0] as EAnkhColorTone;
   return EAnkhColorTone.Custom;
 }
 
