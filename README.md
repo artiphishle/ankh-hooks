@@ -36,6 +36,10 @@ Documentation to follow
 
 Documentation to follow
 
+### useColorPalette()
+
+Documentation to follow
+
 ### useColorParser()
 
 Documentation to follow
@@ -62,4 +66,16 @@ useFatalError("Something went wrong!", {enableLogging: true});"
 
 ```ts
 const { writeLog } = useAnkhLogging();
+```
+
+## Static
+
+Static file handling
+
+### useSvg()
+
+Dynamically load an SVG icon
+
+```ts
+const SvgComponent = useSvg("house");
 ```

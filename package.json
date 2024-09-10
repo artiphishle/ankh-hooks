@@ -29,18 +29,24 @@
     "url": "git+https://github.com/artiphishle/ankh-hooks.git"
   },
   "dependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
-    "@types/node": "^20.14.12",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "ankh-types": "^1.0.3",
-    "eslint": "^9.7.0",
+    "@testing-library/react": "^16.0.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^20.16.5",
+    "ankh-types": "^1.1.3",
+    "eslint": "^9.10.0",
     "eslint-config-google": "^0.14.0",
+    "fake-indexeddb": "^6.0.0",
+    "jsdom": "^24.1.3",
     "prettier": "^3.3.3",
-    "tsup": "^8.2.3",
-    "tsx": "^4.16.2",
+    "tsup": "^8.2.4",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.4"
   },
   "scripts": {
@@ -64,8 +70,15 @@
     ],
     "splitting": false,
     "sourcemap": true,
-    "clean": true
+    "minify": true,
+    "bundle": true,
+    "external": [
+      "react"
+    ],
+    "treeshake": true,
+    "clean": true,
+    "onSuccess": "node scripts/addClientDirective.js"
   },
   "types": "dist/index.d.ts",
-  "version": "1.0.3"
+  "version": "1.4.6"
 }
