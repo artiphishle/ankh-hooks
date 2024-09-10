@@ -97,6 +97,10 @@ function usePaletteCreator({ config }: IUsePaletteCreator) {
 }
 */
 
+function useColorRules() {
+  return rules;
+}
+
 function getUsedColorTone(colors: IAnkhColorHsl[]) {
   const EARTH_RULES = rules.tone[EAnkhColorTone.Earth];
   const FLUORESCENT_RULES = rules.tone[EAnkhColorTone.Fluorescent];
@@ -151,6 +155,7 @@ function useShadesPalette({ count, hue }: IUseColorPalette) {
 export function useColorPalette() {
   return {
     getUsedColorTone,
+    useColorRules,
     useEarthPalette,
     useFluorescentPalette,
     useJewelPalette,
