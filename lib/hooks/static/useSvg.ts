@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useError } from "../mdd";
 
 export function useSvg(filePath: string) {
@@ -10,14 +10,16 @@ export function useSvg(filePath: string) {
       try {
         const response = await fetch(filePath);
         if (!response.ok) throw response.text;
-        const svgText = await response.text();
-        setSvg(svgText);
+
+        setSvg(await response.text());
       } catch (error: any) {
         useFatalError(`Cannot load SVG '${name}': ${error}`);
       }
     }
-    fetchSvg();
-  }, []);
+    filePath && fetchSvg();
+  }, [filePath]);
 
-  return { svg };
+  const memoizedSvg = useMemo(() => svg, [svg]);
+
+  return { svg: memoizedSvg };
 }
