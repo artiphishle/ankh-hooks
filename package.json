@@ -79,6 +79,6 @@
     "onSuccess": "node scripts/addClientDirective.js"
   },
   "types": "dist/index.d.ts",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "packageManager": "pnpm@10.7.1"
 }
