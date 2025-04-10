@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
+const fs = require("fs")
 
 function addClientDirective(filePath) {
-  const content = fs.readFileSync(filePath, "utf8");
-  const clientDirective = '"use client";\n';
+  const content = fs.readFileSync(filePath, "utf8")
+  const clientDirective = '"use client";\n'
 
-  if (content.startsWith(clientDirective)) return;
+  if (content.startsWith(clientDirective)) return
 
-  fs.writeFileSync(filePath, `${clientDirective}${content}`, "utf8");
+  fs.writeFileSync(filePath, `${clientDirective}${content}`, "utf8")
 }
+;["dist/index.js", "dist/index.mjs"].forEach(addClientDirective)
 
-["dist/index.js", "dist/index.mjs"].forEach(addClientDirective);
-
-process.exit(0);
+process.exit(0)

@@ -48,6 +48,16 @@ Documentation to follow
 
 Documentation to follow
 
+## FS
+
+### useDirectory()
+
+Documentation to follow
+
+### useLanguageDetection()
+
+Documentation to follow
+
 ## MDD
 
 Metric driven design

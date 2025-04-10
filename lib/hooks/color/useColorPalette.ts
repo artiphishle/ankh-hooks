@@ -1,28 +1,28 @@
-import { EAnkhColorTone, type IAnkhColorHsl } from "ankh-types";
+import { EAnkhColorTone, type IAnkhColorHsl } from "ankh-types"
 
 enum EAnkhColorSeverity {
-  Error,
-  Info,
-  Success,
-  Warn
+  Error = 0,
+  Info = 1,
+  Success = 2,
+  Warn = 3,
 }
 enum EAnkhColorSemanticName {
-  Primary = 'primary',
-  Secondary = 'secondary',
-  Accent = 'accent',
-  Base = 'base'
+  Primary = "primary",
+  Secondary = "secondary",
+  Accent = "accent",
+  Base = "base",
 }
 enum EAnkhColorToneCombination {
-  EarthAndNeutral,
-  EarthAndPastel,
-  FluorescentAndShades,
-  JewelAndPastel,
-  ShadesAndPastel,
+  EarthAndNeutral = 0,
+  EarthAndPastel = 1,
+  FluorescentAndShades = 2,
+  JewelAndPastel = 3,
+  ShadesAndPastel = 4,
 }
 interface IAnkhColorRules {
-  combination: any;
-  tone: Record<Exclude<EAnkhColorTone, EAnkhColorTone.Custom>, any>;
-  severity: Record<EAnkhColorSeverity, any>;
+  combination: any
+  tone: Record<Exclude<EAnkhColorTone, EAnkhColorTone.Custom>, any>
+  severity: Record<EAnkhColorSeverity, any>
 }
 
 const rules: IAnkhColorRules = {
@@ -70,16 +70,16 @@ const rules: IAnkhColorRules = {
     [EAnkhColorSeverity.Error]: { h: { min: 0, max: 119 } },
     [EAnkhColorSeverity.Info]: { h: { min: 0, max: 360 } },
     [EAnkhColorSeverity.Success]: { h: { min: 239, max: 360 } },
-    [EAnkhColorSeverity.Warn]: { h: { min: 0, max: 0 } }
-  }
-};
+    [EAnkhColorSeverity.Warn]: { h: { min: 0, max: 0 } },
+  },
+}
 
 const generateHslColor = ({ hue, range }: any) => {
-  const { s, l } = range;
-  const realHue = Math.floor(Math.random() * 360);
-  const saturation = Math.random() * (s.max - s.min) + s.min;
-  const lightness = Math.random() * (l.max - l.min) + l.min;
-  return `hsl(${realHue}, ${saturation}% ${lightness}%)`;
+  const { s, l } = range
+  const realHue = Math.floor(Math.random() * 360)
+  const saturation = Math.random() * (s.max - s.min) + s.min
+  const lightness = Math.random() * (l.max - l.min) + l.min
+  return `hsl(${realHue}, ${saturation}% ${lightness}%)`
 }
 function generatePalette({ count = 4, hue, range }: IGeneratePalette) {
   return new Array(count).fill({ hue, range }).map(() => generateHslColor({ hue, range }))
@@ -98,59 +98,70 @@ function usePaletteCreator({ config }: IUsePaletteCreator) {
 */
 
 function useColorRules() {
-  return rules;
+  return rules
 }
 
 function getUsedColorTone(colors: IAnkhColorHsl[]) {
-  const EARTH_RULES = rules.tone[EAnkhColorTone.Earth];
-  const FLUORESCENT_RULES = rules.tone[EAnkhColorTone.Fluorescent];
-  const JEWEL_RULES = rules.tone[EAnkhColorTone.Jewel];
-  const NEUTRAL_RULES = rules.tone[EAnkhColorTone.Neutral];
-  const PASTEL_RULES = rules.tone[EAnkhColorTone.Pastel];
-  const SHADE_RULES = rules.tone[EAnkhColorTone.Shades];
+  const EARTH_RULES = rules.tone[EAnkhColorTone.Earth]
+  const FLUORESCENT_RULES = rules.tone[EAnkhColorTone.Fluorescent]
+  const JEWEL_RULES = rules.tone[EAnkhColorTone.Jewel]
+  const NEUTRAL_RULES = rules.tone[EAnkhColorTone.Neutral]
+  const PASTEL_RULES = rules.tone[EAnkhColorTone.Pastel]
+  const SHADE_RULES = rules.tone[EAnkhColorTone.Shades]
 
   function getUsedTone({ s, l }: { s: number; l: number }) {
-    if (s >= EARTH_RULES.s.min && s <= EARTH_RULES.s.max && l >= EARTH_RULES.l.min && l <= EARTH_RULES.l.max) return EAnkhColorTone.Earth;
-    if (s >= FLUORESCENT_RULES.s.min && s <= FLUORESCENT_RULES.s.max && l >= FLUORESCENT_RULES.l.min && l <= FLUORESCENT_RULES.l.max) return EAnkhColorTone.Fluorescent;
-    if (s >= JEWEL_RULES.s.min && s <= JEWEL_RULES.s.max && l >= JEWEL_RULES.l.min && l <= JEWEL_RULES.l.max) return EAnkhColorTone.Jewel;
-    if (s >= NEUTRAL_RULES.s.min && s <= NEUTRAL_RULES.s.max && l >= NEUTRAL_RULES.l.min && l <= NEUTRAL_RULES.l.max) return EAnkhColorTone.Neutral;
-    if (s >= PASTEL_RULES.s.min && s <= PASTEL_RULES.s.max && l >= PASTEL_RULES.l.min && l <= PASTEL_RULES.l.max) return EAnkhColorTone.Pastel;
-    if (s >= SHADE_RULES.s.min && s <= SHADE_RULES.s.max && l >= SHADE_RULES.l.min && l <= SHADE_RULES.l.max) return EAnkhColorTone.Shades;
-    return EAnkhColorTone.Custom;
+    if (s >= EARTH_RULES.s.min && s <= EARTH_RULES.s.max && l >= EARTH_RULES.l.min && l <= EARTH_RULES.l.max)
+      return EAnkhColorTone.Earth
+    if (
+      s >= FLUORESCENT_RULES.s.min &&
+      s <= FLUORESCENT_RULES.s.max &&
+      l >= FLUORESCENT_RULES.l.min &&
+      l <= FLUORESCENT_RULES.l.max
+    )
+      return EAnkhColorTone.Fluorescent
+    if (s >= JEWEL_RULES.s.min && s <= JEWEL_RULES.s.max && l >= JEWEL_RULES.l.min && l <= JEWEL_RULES.l.max)
+      return EAnkhColorTone.Jewel
+    if (s >= NEUTRAL_RULES.s.min && s <= NEUTRAL_RULES.s.max && l >= NEUTRAL_RULES.l.min && l <= NEUTRAL_RULES.l.max)
+      return EAnkhColorTone.Neutral
+    if (s >= PASTEL_RULES.s.min && s <= PASTEL_RULES.s.max && l >= PASTEL_RULES.l.min && l <= PASTEL_RULES.l.max)
+      return EAnkhColorTone.Pastel
+    if (s >= SHADE_RULES.s.min && s <= SHADE_RULES.s.max && l >= SHADE_RULES.l.min && l <= SHADE_RULES.l.max)
+      return EAnkhColorTone.Shades
+    return EAnkhColorTone.Custom
   }
 
-  const tones = colors.map((color) => getUsedTone(color));
-  if (tones.includes(EAnkhColorTone.Custom)) return EAnkhColorTone.Custom;
+  const tones = colors.map((color) => getUsedTone(color))
+  if (tones.includes(EAnkhColorTone.Custom)) return EAnkhColorTone.Custom
 
-  const filtered = tones.filter((tone) => tone === tones[0]);
-  if (filtered.length === colors.length) return filtered[0] as EAnkhColorTone;
-  return EAnkhColorTone.Custom;
+  const filtered = tones.filter((tone) => tone === tones[0])
+  if (filtered.length === colors.length) return filtered[0] as EAnkhColorTone
+  return EAnkhColorTone.Custom
 }
 
 function useEarthPalette({ count, hue }: IUseColorPalette) {
-  const range = rules.tone[EAnkhColorTone.Earth];
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Earth });
+  const range = rules.tone[EAnkhColorTone.Earth]
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Earth })
 }
 function useFluorescentPalette({ count, hue }: IUseColorPalette) {
-  const range = rules.tone[EAnkhColorTone.Fluorescent];
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Fluorescent });
+  const range = rules.tone[EAnkhColorTone.Fluorescent]
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Fluorescent })
 }
 function useJewelPalette({ count, hue }: IUseColorPalette) {
-  const range = rules.tone[EAnkhColorTone.Jewel];
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Jewel });
+  const range = rules.tone[EAnkhColorTone.Jewel]
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Jewel })
 }
 function useNeutralPalette({ count, hue }: IUseColorPalette) {
   const range = rules.tone[EAnkhColorTone.Neutral]
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Neutral });
-};
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Neutral })
+}
 function usePastelPalette({ count, hue }: IUseColorPalette) {
   const range = rules.tone[EAnkhColorTone.Pastel]
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Pastel });
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Pastel })
 }
 function useShadesPalette({ count, hue }: IUseColorPalette) {
-  const range = rules.tone[EAnkhColorTone.Shades];
-  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Shades });
-};
+  const range = rules.tone[EAnkhColorTone.Shades]
+  return generatePalette({ count, hue, range, tone: EAnkhColorTone.Shades })
+}
 
 export function useColorPalette() {
   return {
@@ -161,31 +172,31 @@ export function useColorPalette() {
     useJewelPalette,
     useNeutralPalette,
     usePastelPalette,
-    useShadesPalette
-  };
+    useShadesPalette,
+  }
 }
 
 interface IGeneratePalette extends IUseColorPalette {
-  range: IHslRange,
-  tone: EAnkhColorTone,
-  count?: number;
+  range: IHslRange
+  tone: EAnkhColorTone
+  count?: number
 }
 interface IUseColorPalette {
   hue: number
-  count?: number;
+  count?: number
 }
 interface IHslRange {
-  s: { min: number; max: number };
-  l: { min: number; max: number };
+  s: { min: number; max: number }
+  l: { min: number; max: number }
 }
 
 interface IUsePaletteCreator {
   config: {
     hues: number[]
     tones: {
-      tone: EAnkhColorTone;
-      saturation: number;
-      lightness: number;
+      tone: EAnkhColorTone
+      saturation: number
+      lightness: number
     }[]
   }
 }
