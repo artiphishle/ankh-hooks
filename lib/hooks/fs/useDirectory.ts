@@ -1,5 +1,4 @@
 "use server"
-
 import fs from "fs"
 import path from "path"
 import { ELanguage, useLanguageDetection } from "./useLanguageDetection"
@@ -153,7 +152,9 @@ function parseJavaFile(file: IFile, includeContent: boolean): IJavaFile {
 
     // Extract imports
     const importMatches = content.matchAll(/import\s+([a-zA-Z0-9_.*]+)\s*;/g)
-    javaFile.imports = Array.from(importMatches).map((match) => match[1])
+    javaFile.imports = Array.from(importMatches)
+      .map((match) => match[1])
+      .filter((importName): importName is string => importName !== undefined)
 
     // Extract class name
     const classMatch = content.match(/class\s+([a-zA-Z0-9_]+)/)
@@ -192,15 +193,21 @@ function parseTypeScriptFile(file: IFile, includeContent: boolean): ITypeScriptF
     const exportMatches = content.matchAll(
       /export\s+(?:const|let|var|function|class|interface|type|enum)\s+([a-zA-Z0-9_]+)/g,
     )
-    tsFile.exports = Array.from(exportMatches).map((match) => match[1])
+    tsFile.exports = Array.from(exportMatches)
+      .map((match) => match[1])
+      .filter((exportName): exportName is string => exportName !== undefined)
 
     // Extract interfaces
     const interfaceMatches = content.matchAll(/interface\s+([a-zA-Z0-9_]+)/g)
-    tsFile.interfaces = Array.from(interfaceMatches).map((match) => match[1])
+    tsFile.interfaces = Array.from(interfaceMatches)
+      .map((match) => match[1])
+      .filter((interfaceName): interfaceName is string => interfaceName !== undefined)
 
     // Extract types
     const typeMatches = content.matchAll(/type\s+([a-zA-Z0-9_]+)/g)
-    tsFile.types = Array.from(typeMatches).map((match) => match[1])
+    tsFile.types = Array.from(typeMatches)
+      .map((match) => match[1])
+      .filter((typeName): typeName is string => typeName !== undefined)
 
     // Remove content if it wasn't requested
     if (!includeContent) {
