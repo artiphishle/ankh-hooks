@@ -75,8 +75,7 @@
       "react"
     ],
     "treeshake": true,
-    "clean": true,
-    "onSuccess": "node scripts/addClientDirective.js"
+    "clean": true
   },
   "types": "dist/index.d.ts",
   "version": "1.4.10",
