@@ -225,9 +225,12 @@ async function getJavaSourceDirectory(directoryPath: string){
 
 export async function useJavaSourceDirectory(options: IUseJavaDirectory){
   const directory = useJavaDirectory({...options});
-  const javaSrcDir = await getJavaSourceDirectory(directory.path);
-  const filteredDirs = directory.dirs.filter((dir)=> dir.path === javaSrcDir.split('/')[0])
 
+  const javaSrcDir = await getJavaSourceDirectory(directory.path);
+  console.log('java src dir:', javaSrcDir);
+
+  const filteredDirs = directory.dirs.filter((dir) => dir.path === javaSrcDir);
+  
   return {...directory, dirs: filteredDirs};
 }
 
