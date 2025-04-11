@@ -11,17 +11,12 @@ export interface IFile {
   size: number
   lastModified: Date
   content?: string
-}
-export interface IJavaFile extends IFile {
   packageName?: string
-  imports?: string[]
-  className?: string
-}
-export interface ITypeScriptFile extends IFile {
-  imports?: string[]
-  exports?: string[]
   interfaces?: string[]
   types?: string[]
+  imports?: string[]
+  exports?: string[]
+  className?: string
 }
 export interface IDirectory {
   path: string
@@ -34,12 +29,6 @@ export interface IUseDirectory {
   recursive?: boolean
   includeContent?: boolean
   maxDepth?: number
-}
-export interface IUseJavaDirectory extends IUseDirectory {
-  parseJavaFiles?: boolean
-}
-export interface IUseTypeScriptDirectory extends IUseDirectory {
-  parseTypeScriptFiles?: boolean
 }
 
 export function useDirectory(options: IUseDirectory): IDirectory {
@@ -131,8 +120,8 @@ function scanDirectory(
   }
 }
 
-function parseJavaFile(file: IFile, includeContent: boolean): IJavaFile {
-  const javaFile: IJavaFile = { ...file }
+function parseJavaFile(file: IFile, includeContent: boolean): IFile {
+  const javaFile: IFile = { ...file }
 
   // If content is not included, read it temporarily for parsing
   const content =
@@ -166,8 +155,8 @@ function parseJavaFile(file: IFile, includeContent: boolean): IJavaFile {
   return javaFile
 }
 
-function parseTypeScriptFile(file: IFile, includeContent: boolean): ITypeScriptFile {
-  const tsFile: ITypeScriptFile = { ...file }
+function parseTypeScriptFile(file: IFile, includeContent: boolean): IFile {
+  const tsFile: IFile = { ...file }
 
   // If content is not included, read it temporarily for parsing
   const content =
@@ -223,21 +212,21 @@ async function getJavaSourceDirectory(directoryPath: string){
   return sourceDirectory;
 }
 
-export async function useJavaSourceDirectory(options: IUseJavaDirectory){
+export async function useJavaSourceDirectory(options: IUseDirectory){
   const directory = useJavaDirectory({...options});
   const dirs = directory.dirs.filter((dir) => dir.name === "src");
   
   return {...directory, dirs};
 }
 
-export function useJavaDirectory(options: IUseJavaDirectory){
+export function useJavaDirectory(options: IUseDirectory){
   return useDirectory({
     ...options,
     // Additional Java-specific options can be added here
   });
 }
 
-export function useTypeScriptDirectory(options: IUseTypeScriptDirectory): IDirectory {
+export function useTypeScriptDirectory(options: IUseDirectory): IDirectory {
   return useDirectory({
     ...options,
     // Additional TypeScript-specific options can be added here
