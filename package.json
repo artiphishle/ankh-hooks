@@ -80,6 +80,6 @@
     "clean": true
   },
   "types": "dist/index.d.ts",
-  "version": "1.4.15",
+  "version": "1.4.16",
   "packageManager": "pnpm@10.7.1"
 }
