@@ -1,6 +1,7 @@
 "use server"
 import fs from "fs"
 import path from "path"
+import xml2js from "xml2js";
 import { ELanguage, useLanguageDetection } from "./useLanguageDetection"
 
 export interface IFile {
@@ -11,38 +12,32 @@ export interface IFile {
   lastModified: Date
   content?: string
 }
-
 export interface IJavaFile extends IFile {
   packageName?: string
   imports?: string[]
   className?: string
 }
-
 export interface ITypeScriptFile extends IFile {
   imports?: string[]
   exports?: string[]
   interfaces?: string[]
   types?: string[]
 }
-
 export interface IDirectory {
   path: string
   name: string
   files: IFile[]
   dirs: IDirectory[]
 }
-
 export interface IUseDirectory {
   directoryPath: string
   recursive?: boolean
   includeContent?: boolean
   maxDepth?: number
 }
-
 export interface IUseJavaDirectory extends IUseDirectory {
   parseJavaFiles?: boolean
 }
-
 export interface IUseTypeScriptDirectory extends IUseDirectory {
   parseTypeScriptFiles?: boolean
 }
@@ -218,11 +213,29 @@ function parseTypeScriptFile(file: IFile, includeContent: boolean): ITypeScriptF
   return tsFile
 }
 
-export function useJavaDirectory(options: IUseJavaDirectory): IDirectory {
+async function getJavaSourceDirectory(directoryPath: string){
+  const pomPath = path.resolve(directoryPath, 'pom.xml');
+  const pomData = fs.readFileSync(pomPath, 'utf8');
+  const pomParsed = await xml2js.parseStringPromise(pomData);
+  const build = pomParsed.project.build;
+  const sourceDirectory = build && build[0].sourceDirectory ? build[0].sourceDirectory[0] : 'src/main/java';
+
+  return sourceDirectory;
+}
+
+export async function useJavaSourceDirectory(options: IUseJavaDirectory){
+  const directory = useJavaDirectory({...options});
+  const javaSrcDir = await getJavaSourceDirectory(directory.path);
+  const filteredDirs = directory.dirs.filter((dir)=> dir.path === javaSrcDir.split('/')[0])
+
+  return {...directory, dirs: filteredDirs};
+}
+
+export function useJavaDirectory(options: IUseJavaDirectory){
   return useDirectory({
     ...options,
     // Additional Java-specific options can be added here
-  })
+  });
 }
 
 export function useTypeScriptDirectory(options: IUseTypeScriptDirectory): IDirectory {
