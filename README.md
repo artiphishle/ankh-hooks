@@ -94,9 +94,11 @@ const SvgComponent = useSvg("house");
 
 ### useLocalStorage()
 
-Persists JSON-serializable React state in browser local storage. The hook is safe during server rendering, supports functional updates, and synchronizes matching external `storage` events.
+Persists JSON-serializable React state in browser local storage. Use the browser-safe `ankh-hooks/store` subpath so consumers do not pull Node-only hooks into client bundles. It is hydration-safe, supports functional updates, and synchronizes same-document and external storage changes.
 
 ```ts
+import { useLocalStorage } from "ankh-hooks/store";
+
 const [layout, setLayout] = useLocalStorage("layout", "concentric");
 
 setLayout("elk");
