@@ -1,70 +1,82 @@
 "use client"
 
-import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react"
+import { type SetStateAction, useCallback, useSyncExternalStore } from "react"
 
-/** Persist React state in browser local storage and synchronize external storage changes. */
+const LOCAL_STORAGE_EVENT = "ankh-hooks:local-storage"
+
+/** Persist JSON-serializable React state in browser local storage. */
 export function useLocalStorage<T>(key: string, initialValue: T) {
-  const initialValueRef = useRef(initialValue)
-  const valueRef = useRef(initialValue)
-  const [storedValue, setStoredValue] = useState(initialValue)
+  const initialSnapshot = serializeValue(initialValue)
 
-  useEffect(() => {
-    if (typeof window === "undefined") return
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      if (typeof window === "undefined") return () => undefined
 
-    const syncValue = (serializedValue: string | null) => {
-      const nextValue = readStoredValue(key, serializedValue, initialValueRef.current)
-      valueRef.current = nextValue
-      setStoredValue(nextValue)
-    }
+      const handleStorage = (event: StorageEvent) => {
+        if (event.storageArea === window.localStorage && event.key === key) onStoreChange()
+      }
+      const handleLocalStorage = (event: Event) => {
+        if ((event as CustomEvent<string>).detail === key) onStoreChange()
+      }
 
-    try {
-      syncValue(window.localStorage.getItem(key))
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error)
-    }
-
-    const handleStorage = (event: StorageEvent) => {
-      if (event.storageArea !== window.localStorage || event.key !== key) return
-      syncValue(event.newValue)
-    }
-
-    window.addEventListener("storage", handleStorage)
-    return () => window.removeEventListener("storage", handleStorage)
-  }, [key])
-
-  const setValue = useCallback(
-    (value: SetStateAction<T>) => {
-      const nextValue =
-        typeof value === "function"
-          ? (value as (previousValue: T) => T)(valueRef.current)
-          : value
-
-      valueRef.current = nextValue
-      setStoredValue(nextValue)
-
-      if (typeof window === "undefined") return
-
-      try {
-        const serializedValue = JSON.stringify(nextValue)
-        if (serializedValue === undefined) throw new TypeError("Value is not JSON serializable")
-        window.localStorage.setItem(key, serializedValue)
-      } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error)
+      window.addEventListener("storage", handleStorage)
+      window.addEventListener(LOCAL_STORAGE_EVENT, handleLocalStorage)
+      return () => {
+        window.removeEventListener("storage", handleStorage)
+        window.removeEventListener(LOCAL_STORAGE_EVENT, handleLocalStorage)
       }
     },
     [key],
   )
 
+  const getSnapshot = useCallback(() => {
+    if (typeof window === "undefined") return initialSnapshot
+
+    try {
+      return window.localStorage.getItem(key) ?? initialSnapshot
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error)
+      return initialSnapshot
+    }
+  }, [initialSnapshot, key])
+
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => initialSnapshot)
+  const storedValue = parseSnapshot(snapshot, initialValue, key)
+
+  const setValue = useCallback(
+    (value: SetStateAction<T>) => {
+      if (typeof window === "undefined") return
+
+      const previousValue = parseSnapshot(getSnapshot(), initialValue, key)
+      const nextValue =
+        typeof value === "function"
+          ? (value as (previousValue: T) => T)(previousValue)
+          : value
+
+      try {
+        window.localStorage.setItem(key, serializeValue(nextValue))
+        window.dispatchEvent(new window.CustomEvent(LOCAL_STORAGE_EVENT, { detail: key }))
+      } catch (error) {
+        console.warn(`Error setting localStorage key "${key}":`, error)
+      }
+    },
+    [getSnapshot, initialValue, key],
+  )
+
   return [storedValue, setValue] as const
 }
 
-function readStoredValue<T>(key: string, serializedValue: string | null, initialValue: T): T {
-  if (serializedValue === null) return initialValue
-
+function parseSnapshot<T>(snapshot: string, initialValue: T, key: string): T {
   try {
-    return JSON.parse(serializedValue) as T
+    return JSON.parse(snapshot) as T
   } catch (error) {
-    console.warn(`Error reading localStorage key "${key}":`, error)
+    console.warn(`Error parsing localStorage key "${key}":`, error)
     return initialValue
   }
+}
+
+function serializeValue<T>(value: T): string {
+  const serializedValue = JSON.stringify(value)
+  if (serializedValue === undefined) throw new TypeError("Value is not JSON serializable")
+  return serializedValue
 }
