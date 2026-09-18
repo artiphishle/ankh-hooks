@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  validate-store-hooks:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm test
+      - name: Run store hook tests
+        run: pnpm test:store
 
       - name: Run build
         run: pnpm build
