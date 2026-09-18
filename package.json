@@ -51,7 +51,7 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "build": "npm view ankh-hooks version versions dist-tags --json && tsup",
+    "build": "npm view ankh-hooks@1.5.2 dist.integrity dist.tarball --json && npm pack ankh-hooks@1.5.2 --dry-run >/dev/null && tsup",
     "changeset:add": "bun changeset",
     "prettier:validate": "bunx prettier --config .prettierrc --write .",
     "prettier:write": "bunx prettier --config .prettierrc --write .",
