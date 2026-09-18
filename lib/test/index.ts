@@ -9,5 +9,6 @@ export * from "./useColorPalette.test"
 export * from "./useColorParser.test"
 // export * from "./useColorValidator.test";
 export * from "./useIndexedDb.test"
+export * from "./useLocalStorage.test"
 export * from "./fs/useDirectory.test"
 export * from "./fs/useLanguageDetection.test"
