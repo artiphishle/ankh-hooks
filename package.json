@@ -58,7 +58,8 @@
     "lint": "eslint",
     "lint:fix": "pnpm run eslint --fix",
     "prepublish": "pnpm run build",
-    "test": "node --import tsx --test lib/test/index.ts"
+    "test": "node --import tsx --test lib/test/index.ts",
+    "test:store": "node --import tsx --test lib/test/useIndexedDb.test.ts lib/test/useLocalStorage.test.ts"
   },
   "tsup": {
     "dts": true,
