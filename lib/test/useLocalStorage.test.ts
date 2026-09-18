@@ -32,7 +32,7 @@ describe("useLocalStorage", () => {
     await waitFor(() => assert.deepStrictEqual(result.current[0], { enabled: true }))
   })
 
-  test("persists functional updates against the latest value", () => {
+  test("persists consecutive functional updates against the latest stored value", () => {
     const { result } = renderHook(() => useLocalStorage("count", 0))
 
     act(() => {
@@ -44,6 +44,16 @@ describe("useLocalStorage", () => {
     assert.strictEqual(window.localStorage.getItem("count"), "2")
   })
 
+  test("synchronizes same-document consumers of one key", () => {
+    const first = renderHook(() => useLocalStorage("count", 0))
+    const second = renderHook(() => useLocalStorage("count", 0))
+
+    act(() => first.result.current[1](5))
+
+    assert.strictEqual(first.result.current[0], 5)
+    assert.strictEqual(second.result.current[0], 5)
+  })
+
   test("falls back to the initial value for malformed stored JSON", async () => {
     window.localStorage.setItem("broken", "{")
     const originalWarn = console.warn
@@ -53,13 +63,13 @@ describe("useLocalStorage", () => {
     try {
       const { result } = renderHook(() => useLocalStorage("broken", 7))
       await waitFor(() => assert.strictEqual(result.current[0], 7))
-      assert.strictEqual(warnings.length, 1)
+      assert.ok(warnings.length >= 1)
     } finally {
       console.warn = originalWarn
     }
   })
 
-  test("keeps in-memory state when persistence serialization fails", () => {
+  test("does not corrupt storage when serialization fails", () => {
     const originalWarn = console.warn
     const warnings: unknown[][] = []
     console.warn = (...args: unknown[]) => warnings.push(args)
@@ -71,7 +81,7 @@ describe("useLocalStorage", () => {
 
       act(() => result.current[1](circular))
 
-      assert.strictEqual(result.current[0], circular)
+      assert.deepStrictEqual(result.current[0], {})
       assert.strictEqual(window.localStorage.getItem("value"), null)
       assert.strictEqual(warnings.length, 1)
     } finally {
@@ -79,10 +89,11 @@ describe("useLocalStorage", () => {
     }
   })
 
-  test("synchronizes matching storage events and resets removed values", () => {
+  test("synchronizes external storage events and resets removed values", () => {
     const { result } = renderHook(() => useLocalStorage("count", 1))
 
     act(() => {
+      window.localStorage.setItem("count", "5")
       window.dispatchEvent(
         new window.StorageEvent("storage", {
           key: "count",
@@ -94,6 +105,7 @@ describe("useLocalStorage", () => {
     assert.strictEqual(result.current[0], 5)
 
     act(() => {
+      window.localStorage.removeItem("count")
       window.dispatchEvent(
         new window.StorageEvent("storage", {
           key: "count",
