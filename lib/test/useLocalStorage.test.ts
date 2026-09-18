@@ -1,39 +1,29 @@
 import assert from "node:assert"
-import { afterEach, beforeEach, describe, test } from "node:test"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { JSDOM } from "jsdom"
+import { afterEach, beforeEach, describe, test } from "node:test"
 
 import { useLocalStorage } from "@/hooks/store"
 
-declare global {
-  namespace NodeJS {
-    interface Global {
-      window: Window & typeof globalThis
-      document: Document
-      navigator: Navigator
-    }
-  }
-}
-
-let cleanup: () => void
-
-beforeEach(() => {
-  const dom = new JSDOM("<!DOCTYPE html><body></body>", { url: "http://localhost" })
-  global.window = dom.window as unknown as Window & typeof globalThis
-  global.document = dom.window.document
-  global.navigator = { userAgent: "node.js" } as Navigator
-
-  cleanup = () => {
-    global.window.close()
-    global.window = undefined!
-    global.document = undefined!
-    global.navigator = undefined!
-  }
-})
-
-afterEach(() => cleanup())
-
 describe("useLocalStorage", () => {
+  let cleanup: () => void
+
+  beforeEach(() => {
+    const dom = new JSDOM("<!DOCTYPE html><body></body>", { url: "http://localhost" })
+    defineGlobal("window", dom.window)
+    defineGlobal("document", dom.window.document)
+    defineGlobal("navigator", dom.window.navigator)
+
+    cleanup = () => {
+      dom.window.close()
+      Reflect.deleteProperty(globalThis, "window")
+      Reflect.deleteProperty(globalThis, "document")
+      Reflect.deleteProperty(globalThis, "navigator")
+    }
+  })
+
+  afterEach(() => cleanup())
+
   test("hydrates from localStorage after mounting", async () => {
     window.localStorage.setItem("settings", JSON.stringify({ enabled: true }))
 
@@ -115,3 +105,11 @@ describe("useLocalStorage", () => {
     assert.strictEqual(result.current[0], 1)
   })
 })
+
+function defineGlobal(name: string, value: unknown) {
+  Object.defineProperty(globalThis, name, {
+    configurable: true,
+    writable: true,
+    value,
+  })
+}
