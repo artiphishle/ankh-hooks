@@ -52,12 +52,12 @@
   },
   "scripts": {
     "build": "tsup",
-    "changeset:add": "pnpm changeset",
-    "prettier:validate": "pnpm dlx prettier --config .prettierrc --write .",
-    "prettier:write": "pnpm dlx prettier --config .prettierrc --write .",
+    "changeset:add": "bun changeset",
+    "prettier:validate": "bunx prettier --config .prettierrc --write .",
+    "prettier:write": "bunx prettier --config .prettierrc --write .",
     "lint": "eslint",
-    "lint:fix": "pnpm run eslint --fix",
-    "prepublish": "pnpm run build",
+    "lint:fix": "bun run  eslint --fix",
+    "prepublish": "bun run build",
     "test": "node --import tsx --test lib/test/index.ts",
     "test:store": "node --import tsx --test lib/test/useIndexedDb.test.ts lib/test/useLocalStorage.test.ts"
   },
@@ -82,7 +82,6 @@
   },
   "types": "dist/index.d.ts",
   "version": "1.5.0",
-  "packageManager": "pnpm@10.7.1",
   "peerDependencies": {
     "react": ">=18 <20"
   }
