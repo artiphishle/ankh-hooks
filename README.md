@@ -89,3 +89,16 @@ Dynamically load an SVG icon
 ```ts
 const SvgComponent = useSvg("house");
 ```
+
+## Store
+
+### useLocalStorage()
+
+Persists JSON-serializable React state in browser local storage. The hook is safe during server rendering, supports functional updates, and synchronizes matching external `storage` events.
+
+```ts
+const [layout, setLayout] = useLocalStorage("layout", "concentric");
+
+setLayout("elk");
+setLayout((current) => (current === "elk" ? "grid" : "elk"));
+```
