@@ -1,47 +1,37 @@
-import { describe, afterEach, beforeEach, test } from "node:test"
 import assert from "assert"
-import { JSDOM } from "jsdom"
 import { renderHook, waitFor } from "@testing-library/react"
-import { useIndexedDb } from "@/hooks/store"
 import { IDBFactory } from "fake-indexeddb"
 import "fake-indexeddb/auto"
+import { JSDOM } from "jsdom"
+import { afterEach, beforeEach, describe, test } from "node:test"
 
-declare global {
-  namespace NodeJS {
-    interface Global {
-      window: Window & typeof globalThis
-      document: Document
-      navigator: Navigator
-      indexedDB: IDBFactory
-    }
-  }
-}
-
-let cleanup: () => void
-
-beforeEach(() => {
-  const dom = new JSDOM(`<!DOCTYPE html><body></body>`, { url: "http://localhost" })
-  global.window = dom.window as unknown as Window & typeof globalThis
-  global.document = dom.window.document
-  global.navigator = { userAgent: "node.js" } as Navigator
-  global.indexedDB = new IDBFactory()
-
-  cleanup = () => {
-    global.window.close()
-    global.window = undefined!
-    global.document = undefined!
-    global.navigator = undefined!
-    global.indexedDB = undefined!
-  }
-})
-
-afterEach(() => {
-  cleanup()
-})
+import { useIndexedDb } from "@/hooks/store"
 
 describe("useIndexedDb", () => {
+  let cleanup: () => void
+
+  beforeEach(() => {
+    const dom = new JSDOM("<!DOCTYPE html><body></body>", { url: "http://localhost" })
+    defineGlobal("window", dom.window)
+    defineGlobal("document", dom.window.document)
+    defineGlobal("navigator", dom.window.navigator)
+    defineGlobal("indexedDB", new IDBFactory())
+
+    cleanup = () => {
+      dom.window.close()
+      Reflect.deleteProperty(globalThis, "window")
+      Reflect.deleteProperty(globalThis, "document")
+      Reflect.deleteProperty(globalThis, "navigator")
+      Reflect.deleteProperty(globalThis, "indexedDB")
+    }
+  })
+
+  afterEach(() => cleanup())
+
   test("should open indexedDB with the given name and store", async () => {
-    const { result } = renderHook(() => useIndexedDb<ITestData>({ dbName: "test-db", storeName: "test-store" }))
+    const { result } = renderHook(() =>
+      useIndexedDb<ITestData>({ dbName: "test-db", storeName: "test-store" }),
+    )
 
     await waitFor(async () => {
       const { api, db } = result.current
@@ -58,6 +48,14 @@ describe("useIndexedDb", () => {
     })
   })
 })
+
+function defineGlobal(name: string, value: unknown) {
+  Object.defineProperty(globalThis, name, {
+    configurable: true,
+    writable: true,
+    value,
+  })
+}
 
 interface ITestData {
   id: IDBValidKey
