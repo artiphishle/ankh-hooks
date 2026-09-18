@@ -63,9 +63,10 @@
   },
   "tsup": {
     "dts": true,
-    "entry": [
-      "lib/index.ts"
-    ],
+    "entry": {
+      "index": "lib/index.ts",
+      "store": "lib/hooks/store/index.ts"
+    },
     "format": [
       "cjs",
       "esm"
@@ -81,8 +82,21 @@
     "clean": true
   },
   "types": "dist/index.d.ts",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "peerDependencies": {
     "react": ">=18 <20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "import": "./dist/store.mjs",
+      "require": "./dist/store.js"
+    },
+    "./*": "./*"
   }
 }
