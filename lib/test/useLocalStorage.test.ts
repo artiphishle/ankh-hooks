@@ -69,6 +69,26 @@ describe("useLocalStorage", () => {
     }
   })
 
+  test("keeps in-memory state when persistence serialization fails", () => {
+    const originalWarn = console.warn
+    const warnings: unknown[][] = []
+    console.warn = (...args: unknown[]) => warnings.push(args)
+
+    try {
+      const { result } = renderHook(() => useLocalStorage<object>("value", {}))
+      const circular: { self?: unknown } = {}
+      circular.self = circular
+
+      act(() => result.current[1](circular))
+
+      assert.strictEqual(result.current[0], circular)
+      assert.strictEqual(window.localStorage.getItem("value"), null)
+      assert.strictEqual(warnings.length, 1)
+    } finally {
+      console.warn = originalWarn
+    }
+  })
+
   test("synchronizes matching storage events and resets removed values", () => {
     const { result } = renderHook(() => useLocalStorage("count", 1))
 
