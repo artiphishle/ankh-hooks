@@ -17,7 +17,11 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       setStoredValue(nextValue)
     }
 
-    syncValue(window.localStorage.getItem(key))
+    try {
+      syncValue(window.localStorage.getItem(key))
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error)
+    }
 
     const handleStorage = (event: StorageEvent) => {
       if (event.storageArea !== window.localStorage || event.key !== key) return
@@ -41,7 +45,9 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       if (typeof window === "undefined") return
 
       try {
-        window.localStorage.setItem(key, JSON.stringify(nextValue))
+        const serializedValue = JSON.stringify(nextValue)
+        if (serializedValue === undefined) throw new TypeError("Value is not JSON serializable")
+        window.localStorage.setItem(key, serializedValue)
       } catch (error) {
         console.warn(`Error setting localStorage key "${key}":`, error)
       }
