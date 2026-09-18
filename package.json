@@ -51,7 +51,7 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "npm view ankh-hooks@1.5.0 dist.integrity dist.tarball --json && npm view @ankhorage/utility@1.4.0 dist.integrity dist.tarball --json && tsup",
     "changeset:add": "bun changeset",
     "prettier:validate": "bunx prettier --config .prettierrc --write .",
     "prettier:write": "bunx prettier --config .prettierrc --write .",
