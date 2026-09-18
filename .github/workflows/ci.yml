@@ -17,22 +17,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10.7.1
+          bun-version: '1.4.2'
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22.14.0'
-          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Run store hook tests
-        run: pnpm test:store
+        run: bun run test:store
 
       - name: Run build
-        run: pnpm build
+        run: bun run build
+
+      - name: Verify browser-safe store subpath
+        run: |
+          node -e "import('ankh-hooks/store').then(module => { if (typeof module.useLocalStorage !== 'function') process.exit(1) })"
+          if grep -E 'require\(["'\'' ]fs|from ["'\'']fs|node:fs' dist/store.js dist/store.mjs; then
+            echo "Store bundle unexpectedly contains Node fs imports."
+            exit 1
+          fi
